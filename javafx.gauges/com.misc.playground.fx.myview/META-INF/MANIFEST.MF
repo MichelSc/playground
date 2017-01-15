@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Myview
+Bundle-SymbolicName: com.misc.playground.fx.myview;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: MISC
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.fx.ui.workbench3
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .,
+ lib/Medusa-7.3.jar
