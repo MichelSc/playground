@@ -31,6 +31,9 @@ import javafx.stage.Stage;
 public class MyViewPart extends FXViewPart {
 	private Button button;
 	private final int nofSkins = Gauge.SkinType.values().length;
+	private int minvalue = 500;
+	private int maxvalue = 1100;
+	
 	private Gauge    gauges[][];
     private GridPane pane;  
     private Gauge    steps;  
@@ -114,8 +117,8 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
         	for ( int skin = 0; skin<nofSkins; skin++){
         		Gauge.SkinType skinType = Gauge.SkinType.values()[skin];
         		gauges[i][skin] = builder.decimals(0)
-		                 .minValue( 20)
-		                 .maxValue(120)
+		                 .minValue( this.minvalue)
+		                 .maxValue( this.maxvalue)
         				 .unit("KM")
         				 .skinType(skinType)
         				 .build();          
@@ -140,27 +143,36 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
         pane.setHgap(10);  
         pane.setVgap(15);  
         pane.setBackground(new Background(new BackgroundFill(Color.rgb(130,116,133), CornerRadii.EMPTY, Insets.EMPTY)));  
-//        pane.setBackground(new Background(new BackgroundFill(Color.rgb(39,44,50), CornerRadii.EMPTY, Insets.EMPTY)));  
+//        pane.setBackground(new Background(new BackgroundFill(Color.rgb(39,44,50), CornerRadii.EMPTY, Insets.EMPTY))); 
+        int firstSkin = this.nofSkins-3;
         for ( int i=0; i<3; i++){
-        	for ( int skin = 0; skin<nofSkins; skin++){
+        	for ( int skin = firstSkin; skin<nofSkins; skin++){
           	  Gauge gauge = gauges[i][skin];
           	  String title = Gauge.SkinType.values()[skin].toString();
               Node node = getTopicBox(title       , Color.rgb(255,183,77) , gauge);
               pane.add(node       , i, skin);
-              gauge.setValue(23+27*i);
+//              gauge.setPrefSize(100.0, 100.0);
+              // min measured value
+              // not supported by TILES gauges
+//              gauge.setMinMeasuredValue(20.0);
+//              gauge.setMinMeasuredValueVisible(true);
+              // starts from zero
+//              gauge.setStartFromZero(false);
               // lcd supported by AMP, INDICATOR, HORIZONTAL, QUARTER
-              gauge.setLcdVisible(false);;
+//              gauge.setLcdVisible(false);;
               // serctions are supported by BULLET_CHART, SIMPLE, TINY, SECTION, SIMPLE_SECTION
-              gauge.addSection(new Section(10,20, Color.AZURE));
-              gauge.addSection(new Section(33,50, Color.YELLOW));
+//              gauge.addSection(new Section(10,20, Color.AZURE));
+//              gauge.addSection(new Section(33,50, Color.YELLOW));
               // areas supported by INDICATOR, HORIZONTAL, VERTICAL, QUARTER
-              gauge.setAreasVisible(true);
-              gauge.addArea(new Section(80,100, Color.RED));
+//              gauge.setAreasVisible(true);
+//              gauge.addArea(new Section(80,100, Color.RED));
               // threshold supported by BULLETCHART, KPI, MODERN, INDICATOR, HORIZONTAL, VERTICAL, QUARTER, TILEKPI
               gauge.setThresholdVisible(true);
-              gauge.setThreshold(55);
-              gauge.setThresholdColor(Color.DARKGREEN);
+              gauge.setThreshold(654);
+              gauge.setThresholdColor(Color.RED);
+              gauge.setStartFromZero(false);
 
+              gauge.setValue(this.minvalue+0+(this.maxvalue-this.minvalue)*i/2);
               }
         }
 //        pane.add(stepsBox       , 0, 0);  
