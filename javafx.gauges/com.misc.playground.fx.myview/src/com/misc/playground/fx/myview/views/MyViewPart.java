@@ -9,6 +9,11 @@ import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.skins.SlimSkin;
+import eu.hansolo.medusa.skins.TileTextKpiSkin;
+import eu.hansolo.tilesfx.Tile;
+import eu.hansolo.tilesfx.TileBuilder;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,13 +34,18 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class MyViewPart extends FXViewPart {
-	private Button button;
+    private GridPane pane;  
+
+    private Button button;
 	private final int nofSkins = Gauge.SkinType.values().length;
 	private int minvalue = 500;
 	private int maxvalue = 1100;
+	private int currentValue = 501;
 	
+	private Tile              percentageTile;
+	private static final double TILE_SIZE = 200;
+	      
 	private Gauge    gauges[][];
-    private GridPane pane;  
     private Gauge    steps;  
     private Gauge    distance;  
     private Gauge    activeCalories;  
@@ -107,10 +117,53 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
 
     @Override
 	protected Scene createFxScene() {
-//		BorderPane pane = new BorderPane();
-//		this.button = new Button("Hello fx misc");
-//		pane.setCenter(this.button);
+    	
+    	pane = new GridPane();  
+        pane.setPadding(new Insets(20));  
+        pane.setHgap(10);  
+        pane.setVgap(15);  
+        pane.setBackground(new Background(new BackgroundFill(Color.rgb(130,116,133), CornerRadii.EMPTY, Insets.EMPTY)));  
+//        pane.setBackground(new Background(new BackgroundFill(Color.rgb(39,44,50), CornerRadii.EMPTY, Insets.EMPTY))); 
+        ScrollPane superPane = new ScrollPane();
+        superPane.setContent(pane);
+        
+    	button = new Button("Accept");
+    	button.setOnAction(new EventHandler<ActionEvent>() {
+    	    @Override public void handle(ActionEvent e) {
+    	    	currentValue+= 12;
+    	    	gauges[0][27].setValue(currentValue);
+    	    }
+    	});
+    	pane.add(button, 0, 1);
+    	
+        this.test1();
 
+        Scene newScene =  new Scene(superPane);
+
+        return newScene;
+    }
+    
+    private void test3(){
+    	 percentageTile = TileBuilder.create()
+                 .prefSize(TILE_SIZE, TILE_SIZE)
+                 .skinType(eu.hansolo.tilesfx.Tile.SkinType.PERCENTAGE)
+                 .title("moplaf gauge")
+                 .unit("KM")
+                 .description("Test")
+                 .minValue(20)
+                 .maxValue(60)
+                 .build();
+    	 
+//    	 this.percentageTile.setMinValue(19);
+    	 this.percentageTile.setStartFromZero(false);
+    	 this.percentageTile.setValue(25);
+    	 this.percentageTile.setValue(26);
+    	 
+    	 
+    	 pane.add(this.percentageTile, 0, 0);
+    }
+    
+    private void test1(){
         GaugeBuilder builder = GaugeBuilder.create();
         gauges = new Gauge[3][nofSkins];
         for ( int i=0; i<3; i++){
@@ -120,7 +173,7 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
 		                 .minValue( this.minvalue)
 		                 .maxValue( this.maxvalue)
         				 .unit("KM")
-        				 .skinType(skinType)
+//        				 .skinType(skinType)
         				 .build();          
         	}
         }
@@ -138,17 +191,14 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
 //        Node weightBox       = getTopicBox("WEIGHT"         , Color.rgb(149,117,205), weight);  
 //        Node bodyFatBox      = getTopicBox("BODY FAT"       , Color.rgb(186,104,200), bodyFat);  
  
-        pane = new GridPane();  
-        pane.setPadding(new Insets(20));  
-        pane.setHgap(10);  
-        pane.setVgap(15);  
-        pane.setBackground(new Background(new BackgroundFill(Color.rgb(130,116,133), CornerRadii.EMPTY, Insets.EMPTY)));  
-//        pane.setBackground(new Background(new BackgroundFill(Color.rgb(39,44,50), CornerRadii.EMPTY, Insets.EMPTY))); 
-        int firstSkin = this.nofSkins-3;
-        for ( int i=0; i<3; i++){
-        	for ( int skin = firstSkin; skin<nofSkins; skin++){
+
+        int firstSkin = 27;//this.nofSkins-3;
+        int lastSkin = 27;
+        for ( int i=0; i<1; i++){
+        	for ( int skin = firstSkin; skin<=lastSkin; skin++){
           	  Gauge gauge = gauges[i][skin];
-          	  String title = Gauge.SkinType.values()[skin].toString();
+//      	  gauge.setSkin(new MoplafSkinType(gauge));
+          	  String title = String.format("%s(%d)", Gauge.SkinType.values()[skin].toString(), skin);
               Node node = getTopicBox(title       , Color.rgb(255,183,77) , gauge);
               pane.add(node       , i, skin);
 //              gauge.setPrefSize(100.0, 100.0);
@@ -170,9 +220,15 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
               gauge.setThresholdVisible(true);
               gauge.setThreshold(654);
               gauge.setThresholdColor(Color.RED);
-              gauge.setStartFromZero(false);
+              
+              gauge.addSection(new Section(600, 1000, Color.GREEN));
 
-              gauge.setValue(this.minvalue+0+(this.maxvalue-this.minvalue)*i/2);
+              gauge.setMinValue(this.minvalue);
+              gauge.setMaxValue(this.maxvalue);
+              gauge.setStartFromZero(false);
+              gauge.setSectionsVisible(false);
+              gauge.setValue(this.currentValue);
+          	  gauge.setSkin(new MoplafSkinType(gauge));
               }
         }
 //        pane.add(stepsBox       , 0, 0);  
@@ -188,13 +244,7 @@ private Node getTopicBox2(final String TEXT, final Color COLOR, final Gauge GAUG
 //        foodCalories  .setValue(1500);  
 //        weight        .setValue(78.7);  
 //        bodyFat       .setValue(14.2);  
-        
-        ScrollPane superPane = new ScrollPane();
-        superPane.setContent(pane);
-        
-
-        return new Scene(superPane);
-	}
+    	}
 
 	@Override
 	protected void setFxFocus() {
