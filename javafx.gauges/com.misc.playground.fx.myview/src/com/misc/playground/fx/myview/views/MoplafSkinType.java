@@ -110,7 +110,9 @@ public class MoplafSkinType extends SkinBase<Gauge> implements Skin<Gauge> {
         }
 
         barBackground = new Region();
-        barBackground.setBackground(new Background(new BackgroundFill(getSkinnable().getBarBackgroundColor(), new CornerRadii(0.0, 0.0, 0.025, 0.025, true), Insets.EMPTY)));
+        barBackground.setBackground(new Background(new BackgroundFill(getSkinnable().getBarBackgroundColor(), 
+        		                                   new CornerRadii(0.0, 0.0, 0.025, 0.025, true), 
+        		                                   Insets.EMPTY)));
 
         barClip = new Rectangle();
 
